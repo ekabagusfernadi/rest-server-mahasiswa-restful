@@ -1,0 +1,27 @@
+AUTENTIKASI REST SERVER
+buat key untuk user dan pembatasan akses perhari
+
+Let's code
+buka config/rest.php untuk konfigurasi rest servernya
+cari rest api key, default nama table = keys, copy sql query yg ada di rest.php, copykan satu database dengan file json rest server
+tapi sebelumnya ganti rest_enable_keys nya dari false ke true supaya defaultnya jadi pakai key
+nama key(misal apikey, token, dll) bisa diganti di rest_key_name
+setelah di buat tablenya keys nya lngsung bisa diinsert data untuk uji coba, untuuk kedepannya bisa direlasikan dengan tabel user supaya satu user punya satu key dan saat generate key bisa dikirimkan ke email user
+sudah, sekarang akses rest_servernya perlu pakai key 
+
+sekarang kasih limit ke keynya
+ada di rest.php/rest_enable_limit = ubah true, lalu seprti apikey sebelumnya buat table database dengan copy sql nya
+bedanya setelah buat table jangan diinsert/diubah2 tabelnya, kita ngatur konfigurasi limitnya di controller, copy sourcecode dari rest.php/limit, pastekan ke class Mahasiswa __construct
+aturannya limit per request method perjam (misal key kijang123, di request index_get hanya boleh 2kali request per jamnya)
+$this->methods['METHOD_NAME']['limit'] = [NUM_REQUESTS_PER_HOUR]; methods pakai s didokumentasi salah
+jika key sudah limit, maka ditabel limit akan ada data key yang sudah limit
+limit bisa diubah perhari tapi bukan lewat config tapi ngedit codingannya
+
+selanjutnya autentikasi login
+sebenarnya rest.php ini bisa ngasih beberapa autentikasi
+cari rest login, disitu tertulis ada beberapa cara untuk login = $config['rest_auth'] = FALSE; ganti false nya jadi metode untuk login yang diinginkan
+ke REST Login Username $config['rest_valid_logins'] = ['admin' => '1234']; array admin ini nantinya diambil dari database
+
+nanti loginnya/autentikasi bisa lewat menu authorization pada postman, type autentikasinya pilih sesuai rest_server(misal basic auth), lalu isi username dan password ['admin' => '1234', 'kijangcitys' => '54321'], bisa ditambah disini usernya
+$config['auth_source'] = 'ldap'; ldap nya hapus supaya defaulnya tidak masuk ke ldap
+nah sekarang jadi berlapis, ada key, autentikasi, dan limit
